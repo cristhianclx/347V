@@ -21,3 +21,6 @@ pip install -r requirements.txt --upgrade # instalas los paquetes
 #
 
 flask --app main run
+
+flask --app main run --reload
+

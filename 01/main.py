@@ -36,9 +36,13 @@ def show_subpath(subpath):
     # show the subpath after /path/
     return f'Subpath {escape(subpath)}'
 
+
 data = [{
     "user": "cristhian",
     "password": 123456,
+}, {
+    "user": "genaro",
+    "password": 12345678,
 }]
 
 # GET /dashboard/ => {}
@@ -59,9 +63,13 @@ def login():
         user = data_input["user"]
         password = data_input["password"]
         if user and password:
-            return "Valid login"
-            # reviar si existe en el diccionario
+            for i in data:
+                if i.get("user") == user and str(i.get("password")) == password:
+                    return "valid login"
+            return "Invalid login"
         else:
             return "Invalid login"
     else:
         return "You need to login"
+
+
