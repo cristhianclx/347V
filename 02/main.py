@@ -24,8 +24,9 @@ def read():
     data["text"] = text
     return data
 
+# /read/faq.pdf/3
 
-@app.route('/read/<str:name>/<int:page>')
+@app.route('/read/<name>/<page>')
 def read_page(name, page):
     data = {}
     reader = PdfReader("data/faq.pdf")
