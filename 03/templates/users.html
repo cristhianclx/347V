@@ -23,7 +23,7 @@
         <td>{{ user.name|title }}</td>
         <td>{{ user.age }}</td>
         <td>{{ user.language }}</td>
-        <td><a class="btn btn-info" href="/users/{{user.name}}">Ver detalle</a></td>
+        <td><a class="btn btn-info" href="{{ url_for('users_by_name', name=user.name) }}">Ver detalle</a></td>
       </tr>
       {% endfor %}
     </tbody>

@@ -1,8 +1,20 @@
 from flask import Flask, render_template
-from pypdf import PdfReader
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 
 app = Flask(__name__)
+
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
+
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
+
+db.init_app(app)
 
 
 @app.route('/')
@@ -28,6 +40,7 @@ users_data = [{
 @app.route('/users')
 def users():
     return render_template("users.html", users=users_data)
+# SELECT * FROM USERS
 
 @app.route('/users/<name>')
 def users_by_name(name):
@@ -36,3 +49,13 @@ def users_by_name(name):
         if user_data.get("name") == name:
             user = user_data
     return render_template("user.html", user=user)
+# SELECT * FROM USERS where name={{name}}
+
+# @app.route('/users-add/')  # POST
+# INSERT INTO USERS VALUES ('name', 'age', 'language')
+
+# @app.route('/users/ID/change')  # UPDATE
+# UPDATE USERS WHERE SET name={{name}}
+
+# @app.route('/users/ID/delete')  # DLETE
+# DELETE
