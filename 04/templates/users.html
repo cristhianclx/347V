@@ -33,9 +33,9 @@
         <td>{{ user.created_at.strftime("%Y-%m-%d %I:%M") }}</td>
         <td>
           <a class="btn btn-info" href="{{ url_for('users_by_id', id=user.id) }}">Ver detalle</a>
-          <a class="btn btn-danger" href="{{ url_for('users_delete', id=user.id )}}">Eliminar</a>
-          <a class="btn btn-success" href="{{ url_for('messages_by_user', user_id=user.id ) }}">Ver mensajes</a>
-          <a class="btn btn-success" href="">Agregar mensaje</a>
+          <a class="btn btn-danger" href="{{ url_for('users_delete', id=user.id) }}">Eliminar</a>
+          <a class="btn btn-success" href="{{ url_for('messages_by_user', user_id=user.id) }}">Ver mensajes</a>
+          <a class="btn btn-success" href="{{ url_for('messages_by_user_add', user_id=user.id) }}">Agregar mensaje</a>
         </td>
       </tr>
       {% endfor %}

@@ -84,3 +84,15 @@ def users_delete(id):
 def messages_by_user(user_id):
     messages_data = Message.query.filter_by(user_id = user_id).all()
     return render_template("messages.html", messages=messages_data)
+
+
+@app.route('/messages-by-user/add/<user_id>', methods=["GET", "POST"])
+def messages_by_user_add(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == "GET":
+        return render_template("messages-add.html", user=user)
+    if request.method == "POST":
+        message = Message(id = request.form["id"], content=request.form.get("content", ""), user_id=user_id)
+        db.session.add(message)
+        db.session.commit()
+        return redirect(url_for('messages_by_user', user_id=user_id))

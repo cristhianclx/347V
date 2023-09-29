@@ -25,3 +25,8 @@ flask --app main run --reload
 >>> message = Message(id = 1, content="<b><i>This is a message</i><b>", user_id=1)
 >>> db.session.add(message)
 >>> db.session.commit()
+
+>>> from main import db, User, Message
+>>> user_1 = User.query.filter_by(id = 1).first()
+>>> user_1.name = "Cristhian's"
+>>> db.session.commit()
