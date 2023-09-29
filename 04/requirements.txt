@@ -3,4 +3,4 @@ Flask-Migrate==4.0.5
 httpie==3.2.2
 ipython
 mysqlclient==2.2.0
-pyscopg2
+psycopg2
