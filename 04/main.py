@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
@@ -36,3 +36,32 @@ class Message(db.Model):
 
     def __repr__(self):
         return f"<Message {self.id}>"
+    
+
+
+@app.route('/')
+def index():
+    return render_template("index.html")
+
+
+@app.route('/users')
+def users():
+    users_data = User.query.all()
+    return render_template("users.html", users=users_data)
+
+
+@app.route('/users/<id>')
+def users_by_id(id):
+    user = User.query.get_or_404(id)
+    return render_template("user.html", user=user)
+
+
+@app.route('/users/add', methods=["GET", "POST"])
+def users_add():
+    if request.method == "GET":
+        return render_template("users-add.html")
+    if request.method == "POST":
+        user = User(id = request.form["id"], name=request.form["name"], age=request.form["age"], content=request.form.get("content", ""))
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('users_by_id', id=user.id))
