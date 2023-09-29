@@ -30,6 +30,7 @@ class User(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref="user")
@@ -65,3 +66,21 @@ def users_add():
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('users_by_id', id=user.id))
+    
+
+@app.route('/users/delete/<id>', methods=["GET", "POST"])
+def users_delete(id):
+    user = User.query.get_or_404(id)
+    if request.method == "GET":
+        return render_template("users-delete.html", user=user)
+    if request.method == "POST":
+        user = User.query.filter_by(id = id).first()
+        db.session.delete(user)
+        db.session.commit()
+        return redirect(url_for('users'))
+    
+
+@app.route('/messages-by-user/<user_id>')
+def messages_by_user(user_id):
+    messages_data = Message.query.filter_by(user_id = user_id).all()
+    return render_template("messages.html", messages=messages_data)

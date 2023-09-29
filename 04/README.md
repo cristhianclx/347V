@@ -13,11 +13,15 @@ flask --app main shell
 >>> # 
 >>> db.session.commit()
 
-
 flask --app main run --reload
-
 
 >>> from main import db, User, Message
 >>> user_3 = User.query.filter_by(id = 3).first()
 >>> db.session.delete(user_3)
+>>> db.session.commit()
+
+>>> from main import db, User, Message
+>>> user_1 = User.query.filter_by(id = 1).first() # not needed
+>>> message = Message(id = 1, content="<b><i>This is a message</i><b>", user_id=1)
+>>> db.session.add(message)
 >>> db.session.commit()
