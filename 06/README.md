@@ -33,9 +33,16 @@ flask --app main run --reload
 >>> user_1.name = "Cristhian's"
 >>> db.session.commit()
 
+>>> db.session.delete(user)
+>>> db.session.commit()
+        
 # GET  /users => return all users
 # POST /users => create an user 
+# GET /users/id => return user data
 # DELETE /users/id => delete a user
 # UPDATE /users/id => actualizar el usuario
 
 
+# http GET 127.0.0.1:5000/users
+# http POST 127.0.0.1:5000/users name=Jesus age=33 id=3
+# http GET 127.0.0.1:5000/users/1

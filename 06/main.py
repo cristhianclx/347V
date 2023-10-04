@@ -46,13 +46,52 @@ class UserResource(Resource):
         return users_results
     
     def post(self):
-        print(request.get_json()) # send is in format json
         # request.form["data"] # send is in format application/form-data
-        return {}, 201
+        data_user = request.get_json() # send is in format json
+        # {'name': 'Jesus', 'age': '33', 'id': '3'}
+        user = User(**data_user)
+        # user = User(id = data_user["id"], name=data_user["name"], age=data_user["age"])
+        db.session.add(user)
+        db.session.commit()
+        return {
+            "id": user.id,
+            "name": user.name,
+            "age": user.age,
+            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
+        }, 201
+
+
+class UserByIDResource(Resource):
+
+    def get(self, user_id):
+        user = User.query.filter_by(id = user_id).first()
+        return {
+            "id": user.id,
+            "name": user.name,
+            "age": user.age,
+            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
+        }
+
+    def patch(self, user_id):
+        data_user = request.get_json()
+        user = User.query.filter_by(id = user_id).first()
+        user.name = data_user["name"]
+        db.session.commit()
+        return {
+            "id": user.id,
+            "name": user.name,
+            "age": user.age,
+            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
+        }
+
+    def delete(self, user_id):
+        # code
+        return {}, 204
 
 
 api.add_resource(WorkingResource, '/')
 api.add_resource(UserResource, '/users')
+api.add_resource(UserByIDResource, '/users/<int:user_id>')
 
 
 if __name__ == '__main__':
