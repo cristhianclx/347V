@@ -10,11 +10,14 @@ flask --app main shell
 
 flask --app main run --reload
 
+python main.py
 
 # definir rutas y posibles respuesta
 
+GET
 / => {"working": True}
 
+GET
 /pokemon-by-name/<pikachu>/ => {
     "name": "pikachu",
     "height": 5kg,
