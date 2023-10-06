@@ -30,6 +30,18 @@ class User(db.Model):
         return f"<User {self.id}>"
     
 
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", backref="user")
+
+    def __repr__(self):
+        return f"<Message {self.id}>"
+
+
 class UserBasicSchema(ma.Schema):
     class Meta:
         fields = ("id", "name")
@@ -42,8 +54,9 @@ users_basic_schema = UserBasicSchema(many = True)
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ("id", "name", "age", "content")
+        fields = ("id", "name", "age", "created_at")
         model = User
+        datetimeformat = "%Y-%m-%d-%H:%M"
 
 
 user_schema = UserSchema()
@@ -55,11 +68,29 @@ class WorkingResource(Resource):
         return {"working": True}
 
 
+class MessageSchema(ma.Schema):
+    user = ma.Nested(UserSchema)
+    class Meta:
+        fields = ("id", "content", "created_at", "user")
+        model = Message
+        datetimeformat = "%Y-%m-%d-%H:%M"
+
+
+message_schema = MessageSchema()
+messages_schema = MessageSchema(many = True)
+
 class PublicUserResource(Resource):
     def get(self):
         users_data = User.query.all()
         return users_basic_schema.dump(users_data)
     
+
+class MessagesByUserResource(Resource):
+
+    def get(self, user_id):
+        messages_data = Message.query.filter_by(user_id = user_id).all()
+        return messages_schema.dump(messages_data)
+
 
 class UserResource(Resource):
     def get(self):
@@ -67,44 +98,25 @@ class UserResource(Resource):
         return users_schema.dump(users_data)
     
     def post(self):
-        # request.form["data"] # send is in format application/form-data
-        data_user = request.get_json() # send is in format json
-        # {'name': 'Jesus', 'age': '33', 'id': '3'}
+        data_user = request.get_json()
         user = User(**data_user)
-        # user = User(id = data_user["id"], name=data_user["name"], age=data_user["age"])
         db.session.add(user)
         db.session.commit()
-        return {
-            "id": user.id,
-            "name": user.name,
-            "age": user.age,
-            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
-        }, 201
+        return user_schema.dump(user), 201
 
 
 class UserByIDResource(Resource):
 
     def get(self, user_id):
         user = User.query.filter_by(id = user_id).first()
-        # TODO: fix this
-        return {
-            "id": user.id,
-            "name": user.name,
-            "age": user.age,
-            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
-        }
+        return user_schema.dump(user)
 
     def patch(self, user_id):
         data_user = request.get_json()
         user = User.query.filter_by(id = user_id).first()
         user.name = data_user["name"]
         db.session.commit()
-        return {
-            "id": user.id,
-            "name": user.name,
-            "age": user.age,
-            "created": user.created_at.strftime("%Y-%m-%d-%H:%M")
-        }
+        return user_schema.dump(user), 201
 
     def delete(self, user_id):
         user = User.query.filter_by(id = user_id).first()
@@ -117,6 +129,7 @@ api.add_resource(WorkingResource, '/')
 api.add_resource(PublicUserResource, '/public/users')
 api.add_resource(UserResource, '/users')
 api.add_resource(UserByIDResource, '/users/<int:user_id>')
+api.add_resource(MessagesByUserResource, '/messages-by-user/<int:user_id>')
 
 
 if __name__ == '__main__':

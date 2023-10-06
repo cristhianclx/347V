@@ -36,6 +36,13 @@ flask --app main run --reload
 >>> db.session.delete(user)
 >>> db.session.commit()
         
+>>> from main import db, User, Message
+>>> user_1 = User.query.filter_by(id = 1).first() # not needed
+>>> message = Message(id = 1, content="<b><i>This is a message</i><b>", user_id=1)
+>>> db.session.add(message)
+>>> db.session.commit()
+
+
 # GET  /users => return all users
 # POST /users => create an user 
 # GET /users/id => return user data
