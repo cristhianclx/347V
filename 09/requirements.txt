@@ -1,0 +1,6 @@
+flask
+flask-marshmallow
+flask-migrate
+flask-socketio
+gunicorn
+gevent

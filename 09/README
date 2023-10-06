@@ -1,0 +1,17 @@
+flask --app main db init
+flask --app main db migrate
+flask --app main db upgrade
+
+flask --app main shell
+
+flask --app main run --reload
+
+# heroku
+
+gunicorn 'main:app'
+
+heroku create
+git add .
+git commit -m "commit-message"
+git push heroku main
+heroku open
