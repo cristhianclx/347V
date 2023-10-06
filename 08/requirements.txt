@@ -1,2 +1,4 @@
-Flask
-flask-socketiO
+flask
+flask-marshmallow
+flask-migrate
+flask-socketio

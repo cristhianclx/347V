@@ -24,9 +24,6 @@
     socket.on('responses-messages', function(msg) {
         $("#messages").append("<p><b>" + msg.user + ": </b>" + msg.message + "</p>");
     });
-    socket.on('responses-welcome', function(msg) {
-        $("#welcome").append("<p>Un usuario nuevo ha ingresado.</p>");
-    });
 
 </script>
 
@@ -39,11 +36,11 @@
             <input type="text" name="message" id="message" placeholder="Message" />
             <input type="submit">
         </form>
-        <h2>Welcome</h2>
-        <div id="welcome">
-        </div>
         <h2>Mensajes</h2>
         <div id="messages">
+            {% for message in messages %}
+            <p><b>{{ message.user }}: </b>{{ message.message }}</p>
+            {% endfor %}
         </div>
     </body>
 </html>
