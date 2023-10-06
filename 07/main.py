@@ -1,21 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from sqlalchemy.sql import func
-from flask_restful_swagger import swagger
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+
+ma = Marshmallow(app)
 
 db = SQLAlchemy(app)
 app.debug = True
 
 migrate = Migrate(app, db)
 
-api = swagger.docs(Api(app), apiVersion='0.1')
-#api = Api(app)
+api = Api(app)
 
 
 class User(db.Model):
@@ -29,23 +30,41 @@ class User(db.Model):
         return f"<User {self.id}>"
     
 
+class UserBasicSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "name")
+        model = User
+
+
+user_basic_schema = UserBasicSchema()
+users_basic_schema = UserBasicSchema(many = True)
+
+
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "name", "age", "content")
+        model = User
+
+
+user_schema = UserSchema()
+users_schema = UserSchema(many = True)
+
+
 class WorkingResource(Resource):
     def get(self):
         return {"working": True}
 
 
+class PublicUserResource(Resource):
+    def get(self):
+        users_data = User.query.all()
+        return users_basic_schema.dump(users_data)
+    
+
 class UserResource(Resource):
     def get(self):
         users_data = User.query.all()
-        users_results = []
-        for user_data in users_data:
-            users_results.append({
-                "id": user_data.id,
-                "name": user_data.name,
-                "age": user_data.age,
-                "created": user_data.created_at.strftime("%Y-%m-%d-%H:%M"), # datetime()
-            })
-        return users_results
+        return users_schema.dump(users_data)
     
     def post(self):
         # request.form["data"] # send is in format application/form-data
@@ -67,6 +86,7 @@ class UserByIDResource(Resource):
 
     def get(self, user_id):
         user = User.query.filter_by(id = user_id).first()
+        # TODO: fix this
         return {
             "id": user.id,
             "name": user.name,
@@ -94,6 +114,7 @@ class UserByIDResource(Resource):
 
 
 api.add_resource(WorkingResource, '/')
+api.add_resource(PublicUserResource, '/public/users')
 api.add_resource(UserResource, '/users')
 api.add_resource(UserByIDResource, '/users/<int:user_id>')
 

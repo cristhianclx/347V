@@ -3,4 +3,4 @@ Flask-Migrate
 httpie==3.2.2
 ipython
 flask-restful
-flask-restful-swagger
+flask-marshmallow
